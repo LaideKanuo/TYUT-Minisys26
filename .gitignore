@@ -1,0 +1,68 @@
+# Vivado 生成文件 — 全部忽略
+*.cache/
+*.hw/
+*.runs/
+*.sim/
+*.ip_user_files/
+*.jou
+*.log
+*.str
+*.xpr
+webtalk*.html
+webtalk*.xml
+usage_statistics_webtalk.*
+vivado_*
+.vivado/
+.Xil/
+
+# Vivado IP 临时文件
+*.dcp
+*.dcp.bak
+ip_upgrade.log
+
+# Vivado 备份
+*.backup.jou
+*.backup.log
+
+# 编辑器
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# 系统文件
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Claude Code 本地配置
+.claude/
+
+# 参考资料（教师提供，大型二进制文件）
+*.docx
+*.pdf
+
+# 比特流文件（可重新生成）
+*.bit
+
+# IP 生成的内存初始化文件（可重新生成）
+*.mif
+
+# 压缩包（交付包已在 Result 中）
+*.zip
+*.tar.gz
+*.rar
+
+# 参考/临时仓库
+TemporaryRepository/
+
+# 本地工作目录（不提交）
+计算机系统能力综合实训/
+
+# 学生资料包二进制文件
+*/学生资料包/
+
+# 保留实验日志（覆盖上面的 *.log 规则）
+!**/实验日志.log
