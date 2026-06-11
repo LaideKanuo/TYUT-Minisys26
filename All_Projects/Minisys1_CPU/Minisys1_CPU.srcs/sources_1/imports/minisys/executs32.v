@@ -6,7 +6,7 @@ module Executs32 (
     input	[31:0]	Read_data_2,		// from idecode32 Read_data_2
     input	[31:0]	Sign_extend,		// from idecode32 sign-extended immediate
     input	[5:0]	Function_opcode,	// from ifetc32 r-type function code, r-form instructions[5:0]
-    input	[5:0]	Exe_opcode,			// from ifetc32 opcode
+    input	[5:0]	Exe_opcode,			// from instruction[31:16]
     input	[1:0]	ALUOp,				// from control32 ALU control code
     input	[4:0]	Shamt,				// from ifetc32 instruction[10:6], shift amount
     input			Sftmd,				// from control32, shift instruction flag
@@ -33,11 +33,12 @@ module Executs32 (
     assign Sftm = Function_opcode[2:0];
     assign Exe_code = (I_format==0) ? Function_opcode : {3'b000,Exe_opcode[2:0]};
     assign Ainput = Read_data_1;
-    assign Binput = (ALUSrc == 0) ? Read_data_2 : Sign_extend[31:0];
+    assign Binput = (ALUSrc == 0) ? Read_data_2 : Sign_extend[31:0]; // choose operand
     assign ALU_ctl[0] = (Exe_code[0] | Exe_code[3]) & ALUOp[1];
     assign ALU_ctl[1] = ((!Exe_code[2]) | (!ALUOp[1]));
     assign ALU_ctl[2] = (Exe_code[1] & ALUOp[1]) | ALUOp[0];
 
+    // TODO begin complete shift operation
     always @* begin
         if(Sftmd)
             case(Sftm[2:0])
@@ -51,7 +52,9 @@ module Executs32 (
             endcase
         else Sinput = Binput;
     end
-
+    // end
+    
+    // TODO begin output
     always @* begin
         if(((ALU_ctl==3'b111) && (Exe_code[3]==1))||((ALU_ctl[2:1]==2'b11) && (I_format==1)))
             ALU_Result = ($signed(Ainput) < $signed(Binput)) ? 32'd1 : 32'd0; // SLT/SLTI
@@ -62,11 +65,15 @@ module Executs32 (
         else
             ALU_Result = ALU_output_mux[31:0];      // otherwise
     end
+    // end
 
     assign Add_Result = PC_plus_4 + {Sign_extend[29:0],2'b00};
 
-    assign Zero = (ALU_output_mux[31:0] == 32'h00000000) ? 1'b1 : 1'b0;
+    // CHANGED begin
+    assign Zero = (ALU_Result == 32'h00000000) ? 1'b1 : 1'b0;
+    // end
 
+    // TODO begin algorithm operation
     always @(ALU_ctl or Ainput or Binput) begin
         case(ALU_ctl)
             3'b000: ALU_output_mux = Ainput & Binput;       // AND
@@ -80,4 +87,6 @@ module Executs32 (
             default: ALU_output_mux = 32'h00000000;
         endcase
     end
+    // end
+    
 endmodule
